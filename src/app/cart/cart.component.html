@@ -1,0 +1,45 @@
+<table class="table">
+  <thead>
+  <tr>
+    <th>#</th>
+    <th>Item</th>
+    <th>Count</th>
+    <th>Time</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let cartItem of this.pizzaService.cartItems; let idx = index">
+    <td>{{idx + 1}}</td>
+    <td>{{cartItem.name}}</td>
+    <td>{{cartItem.count}}</td>
+    <td>
+      {{cartItem.time}} sec
+    </td>
+    <td>
+      <button
+        (click)="allItemRemoveFromCart(cartItem.id)"
+      class="btn btn-outline-danger btn-sm float-right"
+      type="button"
+      >
+        <i class="fa fa-trash-o" ></i>
+      </button>
+      <button
+        (click)="itemAddToCart(cartItem.id)"
+      class="btn btn-outline-success btn-sm float-right"
+      type="button"
+      >
+        <i class="fa fa-plus-circle"></i>
+      </button>
+      <button
+        (click)="itemRemoveFromCart(cartItem.id)"
+      class="btn btn-outline-warning btn-sm float-right"
+      type="button"
+      >
+        <i class="fa fa-minus-circle"></i>
+      </button>
+    </td>
+  </tr>
+  </tbody>
+</table>

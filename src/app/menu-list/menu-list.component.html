@@ -1,0 +1,22 @@
+<div class="container">
+
+  <!-- Page Heading -->
+  <h1 class="my-4">Menu</h1>
+
+  <div class="row">
+    <div *ngFor="let item of pizzaService.menuListItem" class="col-lg-4 col-sm-6 mb-4">
+      <div class="card h-100">
+        <img class="card-img-top" [src]="'http://localhost:8080/images/' + item.imageSrc" alt="pizza picture">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{item.name}}
+          </h4>
+          <p>Cooking time: {{item.timeCook}} </p>
+          <button class="btn btn-outline-info btn-lg btn-block" (click)="pizzaService.addItemToCart(item)">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-cart></app-cart>
+</div>
