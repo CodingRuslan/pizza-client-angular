@@ -1,4 +1,4 @@
-<table class="table">
+<table class="table shopping-cart-table ">
   <thead>
   <tr>
     <th>#</th>
@@ -10,7 +10,7 @@
   </thead>
 
   <tbody>
-  <tr *ngFor="let cartItem of this.pizzaService.cartItems; let idx = index">
+  <tr *ngFor="let cartItem of pizzaService.cartItems; let idx = index">
     <td>{{idx + 1}}</td>
     <td>{{cartItem.name}}</td>
     <td>{{cartItem.count}}</td>
@@ -41,5 +41,10 @@
       </button>
     </td>
   </tr>
+  <tr>
+    <td class="alert-info"><h2>Total cooking time: {{pizzaService.totalCookingTime}}</h2></td>
+    <td><button (click)="pizzaService.makeOrder()" class="btn btn-outline-primary btn-lg btn-block">Make an order</button></td>
+  </tr>
   </tbody>
 </table>
+

@@ -9,7 +9,6 @@ import { PizzaService } from "../pizza.service";
 
 
 export class MenuListComponent implements OnInit {
-  loadingStatus = false;
 
   constructor(private pizzaService: PizzaService) { }
 
@@ -18,10 +17,10 @@ export class MenuListComponent implements OnInit {
   }
 
   loadMenu() {
-    this.loadingStatus = true;
+    this.pizzaService.loadingStatus = true;
     this.pizzaService.fetchElements()
       .subscribe(response => {
-        this.loadingStatus = false;
+        this.pizzaService.loadingStatus = false;
         this.pizzaService.menuListItem = response
       })
   }

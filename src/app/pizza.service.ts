@@ -1,6 +1,9 @@
 import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
+import { Socket } from 'ngx-socket-io';
+
+import { updateOrder } from './service-helpers/cart-service-helper'
 
 export interface IngredientItem {
   idingredients: number
@@ -9,7 +12,7 @@ export interface IngredientItem {
   imageSrc: string
 }
 
-interface CartItem {
+export interface CartItem {
   id: number
   name: string
   count: number
@@ -23,73 +26,52 @@ export class PizzaService {
 
   menuListItem: IngredientItem[] = [];
   cartItems: CartItem[] = [];
+  loadingStatus = false;
+  totalCookingTime: number = 0;
+  modalMessage: string = '';
 
-  constructor(private http: HttpClient) {  }
+  constructor(private http: HttpClient, private socket: Socket) {  }
 
   fetchElements(): Observable<IngredientItem[]> {
     return this.http.get<IngredientItem[]>(`${_apiBase}/ingredients`)
   }
 
-  updateCartItems = (cartItems: CartItem[], item: CartItem, idx: number) => {
-    if (item.count === 0) {
-      return [
-        ...cartItems.slice(0, idx),
-        ...cartItems.slice(idx + 1),
-      ];
-    }
+  makeOrder() {
+    this.http.post(`${_apiBase}/neworder`, {
+      "userId": 27,
+      "cartItems": this.cartItems.map(e => e.id),
+      "timeCooking": this.totalCookingTime
+    })
+      .subscribe(response => {
+        this.socket.emit('submitOrder', response);
 
-    if (idx === -1) {
-      return [
-        ...cartItems,
-        item,
-      ];
-    }
+        this.cartItems = [];
+        this.totalCookingTime = 0;
+        this.modalMessage = `Ваш заказ поступил в обработку, пожалуйста дождитесь его приготовления. Номер вашего заказа ${response}`;
 
-    return [
-      ...cartItems.slice(0, idx),
-      item,
-      ...cartItems.slice(idx + 1),
-    ];
+        this.socket.on('orderIsReady', (id) => {
+          this.modalMessage = `Ваш заказ № ${id} готов!`
+        });
+      })
   };
 
-  updateCartItem(itemFromMenu:IngredientItem, itemFromCart: CartItem, quantity: number): CartItem {
-    if (itemFromCart) {
-      return {
-        ...itemFromCart,
-        count: itemFromCart.count + quantity,
-        time: itemFromCart.time + quantity * itemFromMenu.timeCook,
-      };
-    }
-    return {
-      id: itemFromMenu.idingredients,
-      name: itemFromMenu.name,
-      count: 1,
-      time: itemFromMenu.timeCook,
-    };
-  }
-
-  updateOrder(itemId: number, quantity: number): void {
-    const itemFromMenu = this.menuListItem.find((e) => e.idingredients === itemId);
-
-    const itemIndexFromCart = this.cartItems.findIndex((e) => e.id === itemId);
-    const itemFromCart = this.cartItems[itemIndexFromCart];
-    const newItem = this.updateCartItem(itemFromMenu, itemFromCart, quantity);
-
-    this.cartItems = this.updateCartItems(this.cartItems ,newItem, itemIndexFromCart);
-  }
-
   addItemToCart(item: IngredientItem ): void {
-    this.updateOrder(item.idingredients, 1);
+    this.destructuringCartResponse(updateOrder(this.menuListItem, this.cartItems, this.totalCookingTime, item.idingredients, 1));
   }
 
   removeItemFromCard(item: IngredientItem): void {
-    this.updateOrder(item.idingredients, -1)
+    this.destructuringCartResponse(updateOrder(this.menuListItem, this.cartItems, this.totalCookingTime, item.idingredients, -1));
   }
 
-  removeAllItemFromCart(item: IngredientItem) {
+  removeAllItemFromCart(item: IngredientItem): void {
     const currentItem = this.cartItems.find(({ id }) => id === item.idingredients);
-    this.updateOrder(item.idingredients, -currentItem.count);
+    this.destructuringCartResponse(updateOrder(this.menuListItem, this.cartItems, this.totalCookingTime, item.idingredients, -currentItem.count));
+  }
 
+  destructuringCartResponse (response): void {
+    const { cartItems, totalCookingTime } = response;
+    this.cartItems = cartItems;
+    this.totalCookingTime = totalCookingTime;
   }
 
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {PizzaService} from "./pizza.service";
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'pizza-client-angular';
+  constructor(private pizzaService: PizzaService) {  }
 }
