@@ -1,1 +1,20 @@
-<p>history-list works!</p>
+<div class="container">
+
+  <!-- Page Heading -->
+  <h1 class="my-4">Your history</h1>
+
+  <div class="row">
+    <div *ngFor="let item of pizzaService.historyItems" class="col-lg-3 col-md-4 col-sm-6 mb-4">
+      <div class="card h-100">
+<!--        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>-->
+        <div class="card-body">
+          <h4 class="card-title">
+            <a href="#">Order №{{item.idclientOrder}}</a>
+          </h4>
+          <p class="card-text">Cooking time: {{item.timeCooking}}</p>
+          <p class="card-text">{{item.orderDone === 1 ? 'ready' : 'in process'}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

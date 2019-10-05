@@ -18,7 +18,7 @@ export class MenuListComponent implements OnInit {
 
   loadMenu() {
     this.pizzaService.loadingStatus = true;
-    this.pizzaService.fetchElements()
+    this.pizzaService.fetchMenuElements()
       .subscribe(response => {
         this.pizzaService.loadingStatus = false;
         this.pizzaService.menuListItem = response

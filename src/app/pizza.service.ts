@@ -19,6 +19,14 @@ export interface CartItem {
   time: number
 }
 
+interface HistoryItem {
+  idclientOrder: number
+  userId: number
+  cookId: number
+  orderDone: number
+  timeCooking: string
+}
+
 const _apiBase = 'http://localhost:8080';
 
 @Injectable({providedIn: "root"})
@@ -26,14 +34,20 @@ export class PizzaService {
 
   menuListItem: IngredientItem[] = [];
   cartItems: CartItem[] = [];
+  historyItems: HistoryItem[] = [];
+
   loadingStatus = false;
   totalCookingTime: number = 0;
   modalMessage: string = '';
 
   constructor(private http: HttpClient, private socket: Socket) {  }
 
-  fetchElements(): Observable<IngredientItem[]> {
+  fetchMenuElements(): Observable<IngredientItem[]> {
     return this.http.get<IngredientItem[]>(`${_apiBase}/ingredients`)
+  }
+
+  fetchHistoryElements(): Observable<HistoryItem[]> {
+    return this.http.get<HistoryItem[]>(`${_apiBase}/orders/27`)
   }
 
   makeOrder() {
